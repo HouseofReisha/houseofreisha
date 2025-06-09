@@ -1,0 +1,217 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="House of Reisha - Exquisite fine jewelry crafted with elegance and timeless luxury.">
+  <title>House of Reisha</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f8f8;
+      color: #d4af37;
+      font-family: 'Cinzel', serif;
+    }
+    nav, footer {
+      background-color: #1a2a44;
+      color: #d4af37;
+    }
+    #about, #contact {
+      background-color: #ffffff;
+    }
+    #home {
+      background: url('https://via.placeholder.com/1920x1080?text=Jewelry+Background') center/cover no-repeat, rgba(248, 248, 248, 0.7);
+      background-blend-mode: overlay;
+    }
+    .text-dark-blue {
+      color: #1a2a44;
+    }
+    .gradient-button {
+      background: linear-gradient(to right, #d4af37, #c19a2e);
+    }
+    .gradient-button:hover {
+      background: linear-gradient(to right, #c19a2e, #b08927);
+    }
+    .whatsapp-button {
+      background-color: #25D366;
+    }
+    .whatsapp-button:hover {
+      background: linear-gradient(to right, #c19a2e, #b08927);
+    }
+    .tile {
+      background: #f0f0f0 url('') center/cover no-repeat;
+      border: 2px solid #d4af37;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .tile:hover {
+      transform: scale(1.05);
+      background-color: #e0e0e0;
+    }
+    #contact {
+      background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+    }
+    #contact form input, #contact form textarea {
+      border: 1px solid #d4af37;
+      transition: border-color 0.3s ease;
+    }
+    #contact form input:hover, #contact form textarea:hover {
+      border-color: #c19a2e;
+    }
+    #contact form input:focus, #contact form textarea:focus {
+      border-color: #c19a2e;
+      outline: none;
+      box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+    }
+    .divider {
+      width: 100px;
+      height: 2px;
+      background: #d4af37;
+      margin: 1rem auto;
+    }
+    .contact-form {
+      display: none;
+    }
+    .contact-form.active {
+      display: grid;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <nav class="p-6 shadow-md fixed w-full top-0 z-10">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-4xl font-bold tracking-wide">House of Reisha</h1>
+      <ul class="flex space-x-8 text-lg">
+        <li><a href="#home" class="hover:text-[#c19a2e] transition">Home</a></li>
+        <li><a href="#about" class="hover:text-[#c19a2e] transition">About</a></li>
+        <li><a href="#collections" class="hover:text-[#c19a2e] transition">Collections</a></li>
+        <li><a href="#blogs" class="hover:text-[#c19a2e] transition">Blogs</a></li>
+        <li><a href="#contact" class="hover:text-[#c19a2e] transition">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section id="home" class="pt-28 pb-20 flex items-center justify-center min-h-screen">
+    <div class="text-center px-6">
+      <h2 class="text-5xl md:text-6xl font-bold mb-6 text-dark-blue">House of Reisha</h2>
+      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-dark-blue">Timeless fine jewelry crafted with artistry and elegance.</p>
+      <a href="#collections" class="gradient-button text-[#1a2a44] px-8 py-3 rounded-full text-lg font-semibold transition">Discover Our Collections</a>
+    </div>
+  </section>
+
+  <section id="about" class="py-24">
+    <div class="container mx-auto text-center px-6">
+      <h2 class="text-4xl font-bold mb-10 text-dark-blue">About</h2>
+      <p class="text-lg md:text-xl max-w-4xl mx-auto text-dark-blue">House of Reisha creates fine jewelry that blends tradition with modern elegance. Our collections—Sila, Kundanika, and The Studio—are crafted with gold and diamonds, inspired by heritage and artistry.</p>
+      <a href="#collections" class="gradient-button text-[#1a2a44] px-8 py-3 rounded-full text-lg font-semibold transition mt-8 inline-block">Explore Our Collections</a>
+    </div>
+  </section>
+
+  <section id="collections" class="py-24">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12 text-dark-blue">Our Collections</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <a href="#sila" class="tile p-10 rounded-lg text-center" style="background-image: url('https://via.placeholder.com/400x300?text=Sila+Jewelry');">
+          <h3 class="text-2xl font-semibold mb-4 text-dark-blue">Sila</h3>
+          <p class="text-dark-blue">Graceful designs inspired by strength and poise.</p>
+        </a>
+        <a href="#kundanika" class="tile p-10 rounded-lg text-center" style="background-image: url('https://via.placeholder.com/400x300?text=Kundanika+Jewelry');">
+          <h3 class="text-2xl font-semibold mb-4 text-dark-blue">Kundanika</h3>
+          <p class="text-dark-blue">Intricate craftsmanship rooted in tradition.</p>
+        </a>
+        <a href="#studio" class="tile p-10 rounded-lg text-center" style="background-image: url('https://via.placeholder.com/400x300?text=The+Studio+Jewelry');">
+          <h3 class="text-2xl font-semibold mb-4 text-dark-blue">The Studio</h3>
+          <p class="text-dark-blue">Bespoke creations tailored to your vision.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="py-24">
+    <div class="container mx-auto px-6 text-center">
+      <h2 class="text-5xl font-bold mb-6 text-dark-blue">Connect With Us</h2>
+      <div class="divider"></div>
+      <div class="flex justify-center space-x-4 mb-12">
+        <button id="emailBtn" class="gradient-button text-[#1a2a44] px-8 py-3 rounded-md text-lg font-semibold transition">Send an Email</button>
+        <a href="https://wa.me/7375006254" class="whatsapp-button text-[#1a2a44] px-8 py-3 rounded-md text-lg font-semibold transition flex items-center justify-center">
+          <i class="fab fa-whatsapp mr-2"></i> Ping on WhatsApp
+        </a>
+      </div>
+      <form id="contactForm" class="contact-form grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div class="flex flex-col">
+          <label for="name" class="text-lg mb-2 text-dark-blue font-semibold">Name</label>
+          <input id="name" type="text" placeholder="Enter your name" class="p-4 rounded-md text-[#1a2a44] bg-white">
+        </div>
+        <div class="flex flex-col">
+          <label for="email" class="text-lg mb-2 text-dark-blue font-semibold">Email</label>
+          <input id="email" type="email" placeholder="Enter your email" class="p-4 rounded-md text-[#1a2a44] bg-white">
+        </div>
+        <div class="flex flex-col">
+          <label for="phone" class="text-lg mb-2 text-dark-blue font-semibold">Phone Number</label>
+          <input id="phone" type="tel" placeholder="Enter your phone number" class="p-4 rounded-md text-[#1a2a44] bg-white">
+        </div>
+        <div class="flex flex-col">
+          <label for="message" class="text-lg mb-2 text-dark-blue font-semibold">Message</label>
+          <textarea id="message" placeholder="Enter your message" class="p-4 rounded-md text-[#1a2a44] bg-white h-32"></textarea>
+        </div>
+        <button type="submit" class="gradient-button text-[#1a2a44] px-10 py-4 rounded-md text-xl font-semibold transition md:col-span-4 mt-6">Submit Inquiry</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="p-8 text-center">
+    <p class="text-lg">© 2025 House of Reisha. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const emailBtn = document.getElementById('emailBtn');
+    const contactForm = document.getElementById('contactForm');
+    emailBtn.addEventListener('click', () => {
+      contactForm.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

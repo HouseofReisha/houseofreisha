@@ -1,0 +1,111 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Studio at House of Reisha - Bespoke fine jewelry crafted with elegance and artistry.">
+  <title>The Studio - House of Reisha</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <style>
+    body { background: #f8f8f8; color: #d4af37; font-family: 'Cinzel', serif; scroll-behavior: smooth; }
+    nav, footer { background: #1a2a44; color: #d4af37; }
+    .text-dark-blue { color: #1a2a44; }
+    .swiper-container { width: 100%; height: 550px; padding: 1.8rem 0; background: #fff; overflow: hidden; clip-path: inset(0 0 0 0); }
+    .swiper-slide { display: flex; justify-content: center; align-items: center; }
+    .swiper-slide img { width: 350px; height: 350px; object-fit: cover; border: 2px solid #d4af37; border-radius: 8px; opacity: 0.5; transform: scale(0.9); transition: all 0.5s ease; }
+    .swiper-slide-active img { opacity: 1; transform: scale(1.2); box-shadow: 0 0 15px rgba(212, 175, 55, 0.7); }
+    .swiper-slide-prev img, .swiper-slide-next img { opacity: 0.5; transform: scale(0.9); }
+    .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) { opacity: 0; }
+    .divider { width: 100px; height: 2px; background: #d4af37; margin: 1rem auto; }
+  </style>
+</head>
+<body>
+  <nav class="fixed w-full top-0 z-10 p-6 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-4xl font-bold tracking-wide">House of Reisha</h1>
+      <ul class="flex space-x-8 text-lg">
+        <li><a href="index.html#home" class="hover:text-[#c19a2e] transition">Home</a></li>
+        <li><a href="index.html#about" class="hover:text-[#c19a2e] transition">About</a></li>
+        <li><a href="index.html#collections" class="hover:text-[#c19a2e] transition">Collections</a></li>
+        <li><a href="index.html#blogs" class="hover:text-[#c19a2e] transition">Blogs</a></li>
+        <li><a href="index.html#contact" class="hover:text-[#c19a2e] transition">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="py-24 pt-28">
+    <div class="container mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold mb-6 text-dark-blue">The Studio: Sample Creations</h2>
+      <div class="divider"></div>
+      <p class="text-lg md:text-xl max-w-4xl mx-auto mb-12 text-dark-blue">Discover our bespoke jewelry, crafted with gold and diamonds to reflect your unique vision.</p>
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/cdsv2hjxv12g92xkw6an6/WhatsApp-Image-2025-05-22-at-7.11.11-PM-1.jpeg?rlkey=i9ontt362wh0f1o9frd5a85dw&st=69otua63&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/clny1ftbov6u6z98zpf43/WhatsApp-Image-2025-05-22-at-7.11.11-PM.jpeg?rlkey=w96jwfb0loaq9sh0fw88w2can&st=zwsayf1d&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/92w5fl8o9rgh0fclwjmfd/WhatsApp-Image-2025-05-22-at-7.12.03-PM-1.jpeg?rlkey=nm2jba0o6pqbq6rqs7yphzrp2&st=st5zhkye&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/ztiaixre7fj46z4q6op0p/WhatsApp-Image-2025-05-22-at-7.12.03-PM-2.jpeg?rlkey=o648m88hp3plqun39zukemhcq&st=6j2n7xnf&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/9yvcg088g8v8qpjhr0z03/WhatsApp-Image-2025-05-22-at-7.12.03-PM.jpeg?rlkey=ryeh1yawpyw2rk2m7dp31b6yg&st=4lol9wd6&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/zbqsfgprxfacfdqnqgnze/WhatsApp-Image-2025-05-22-at-7.12.04-PM-1.jpeg?rlkey=2hbwlv972grtgzxqi31zf3i7v&st=9yeg2u1s&dl=1" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://www.dropbox.com/scl/fi/8jah57n0w30hvi77ap4sp/WhatsApp-Image-2025-05-22-at-7.12.04-PM.jpeg?rlkey=ojgnthagugqaht3t6nfy21xfx&st=ht23ualt&dl=1" alt="" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="p-8 text-center text-lg">© 2025 House of Reisha. All rights reserved.</footer>
+
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    new Swiper('.swiper-container', {
+      effect: 'coverflow',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 3,
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      coverflowEffect: { rotate: 20, stretch: -15, depth: 100, modifier: 1, slideShadows: false }
+    });
+  </script>
+</body>
+</html>
